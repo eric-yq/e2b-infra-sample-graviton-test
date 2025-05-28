@@ -48,7 +48,7 @@ This project is built based on version [c746fd93d5f1260315c893dbd5d7290c0a41e52a
 
 1. **Deploy CloudFormation Stack**
    - Open AWS CloudFormation console and create a new stack
-   - Upload the `e2b-setup-env.yml` template file
+   - Upload the `e2b-setup-env.yml` template file for Intel/AMD instances, or `e2b-setup-env_arm64.yml` for Graviton-based instances.
    - Configure the following parameters:
      - **Stack Name**: Enter a name for the stack, **must be lowercase**(e.g., `e2b-infra`)
      - **Domain Configuration**: Enter a domain you own (e.g., `example.com`)
@@ -85,12 +85,12 @@ bash infra-iac/init.sh
 # Build custom AMI images using Packer for the E2B infrastructure
 # This creates optimized machine images with pre-installed dependencies
 # This may take a while, please be patient
-bash infra-iac/packer/packer.sh
+bash infra-iac/packer/packer.sh $(cloud-init query region)$ arm64
 
 # Deploy the complete E2B infrastructure using Terraform
 # This provisions AWS resources including VPC, EC2 instances, RDS, ALB, etc.
 # Wait until the terraform deployment completes
-bash infra-iac/terraform/start.sh
+bash infra-iac/terraform/start.sh -a arm64
 ```
 
 3. Setup Database:
