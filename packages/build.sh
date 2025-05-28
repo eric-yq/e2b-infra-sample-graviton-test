@@ -80,18 +80,4 @@ chmod u+x upload.sh
 ./upload.sh
 echo "envd upload completed successfully"
 
-# Build and upload Firecracker kernels for the current architecture
-echo "=== Building and uploading Firecracker kernels for $ARCHITECTURE ==="
-cd "$PROJECT_ROOT/fc-kernels" || { echo "fc-kernels directory not found"; exit 1; }
-echo "Current directory: $(pwd)"
-./build.sh "$ARCHITECTURE"
-echo "Firecracker kernels build completed successfully"
-
-# Build and upload Firecracker versions for the current architecture
-echo "=== Building and uploading Firecracker versions for $ARCHITECTURE ==="
-cd "$PROJECT_ROOT/fc-versions" || { echo "fc-versions directory not found"; exit 1; }
-echo "Current directory: $(pwd)"
-./build.sh "$ARCHITECTURE"
-echo "Firecracker versions build completed successfully"
-
 echo "=== All builds and uploads completed successfully ==="
