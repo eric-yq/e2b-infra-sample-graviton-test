@@ -95,11 +95,13 @@ echo "File download completed"
 # Upload to S3
 echo "Starting file upload to S3..."
 # Copy envd binary to S3 bucket
-aws s3 cp "${TEMP_DIR}/envd-v0.0.1" "s3://${BUCKET_FC_ENV_PIPELINE}/envd-v0.0.1" --recursive
-aws s3 cp "${TEMP_DIR}/envd" "s3://${BUCKET_FC_ENV_PIPELINE}/envd" --recursive
+aws s3 cp "${TEMP_DIR}/envd-v0.0.1" "s3://${BUCKET_FC_ENV_PIPELINE}/envd-v0.0.1"
+# aws s3 cp ./envd/bin/envd "s3://${BUCKET_FC_ENV_PIPELINE}/envd"
+aws s3 cp "${TEMP_DIR}/envd" "s3://${BUCKET_FC_ENV_PIPELINE}/envd"
 aws s3 cp --recursive "${TEMP_DIR}/kernels/" "s3://${BUCKET_FC_KERNELS}/"
 aws s3 cp --recursive "${TEMP_DIR}/firecrackers/" "s3://${BUCKET_FC_VERSIONS}/"
 echo "File upload to S3 completed"
+
 
 # Clean up temporary directory
 echo "Cleaning up temporary files..."
