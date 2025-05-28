@@ -85,7 +85,7 @@ bash infra-iac/init.sh
 # Build custom AMI images using Packer for the E2B infrastructure
 # This creates optimized machine images with pre-installed dependencies
 # This may take a while, please be patient
-bash infra-iac/packer/packer.sh $(cloud-init query region)$ arm64
+bash infra-iac/packer/packer.sh $(cloud-init query region) arm64
 
 # Deploy the complete E2B infrastructure using Terraform
 # This provisions AWS resources including VPC, EC2 instances, RDS, ALB, etc.
