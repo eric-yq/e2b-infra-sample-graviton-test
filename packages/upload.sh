@@ -85,9 +85,9 @@ wget "https://s3.amazonaws.com/spec.ccfc.min/${latest_kernel_key}" -O "${TEMP_DI
 
 # Download a firecracker binary
 curl -L ${release_url}/download/${latest_version}/firecracker-${latest_version}-${ARCH_SUFFIX}.tgz | tar -xz
-mkdir -p "${TEMP_DIR}/firecrackers/$latest_version"
-mv release-${latest_version}-${ARCH_SUFFIX}/firecracker-${latest}-${ARCH} \
-   ${TEMP_DIR}/firecrackers/$latest_version/firecracker
+mkdir -p "${TEMP_DIR}/firecrackers/${latest_version}"
+mv release-${latest_version}-${ARCH_SUFFIX}/firecracker-${latest_version}-${ARCH_SUFFIX} \
+   ${TEMP_DIR}/firecrackers/${latest_version}/firecracker
 rm -rf release-${latest_version}-${ARCH_SUFFIX}
 
 echo "File download completed"
