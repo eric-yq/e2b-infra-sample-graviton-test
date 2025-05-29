@@ -91,7 +91,8 @@ fi
 
 # Pull the base Docker image
 echo "Pulling e2bdev/base Docker image..."
-docker pull e2bdev/base
+# docker pull e2bdev/base
+docker build -t e2bdev/base:lastest .
 if [ $? -ne 0 ]; then
     echo "Error: Failed to pull e2bdev/base Docker image"
     exit 1
