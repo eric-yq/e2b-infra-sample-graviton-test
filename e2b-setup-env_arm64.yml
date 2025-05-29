@@ -545,8 +545,7 @@ Resources:
             - |
               # Create directory for E2B infrastructure code
               mkdir -p /opt/infra/ && cd /opt/infra/
-              # git clone https://github.com/aws-samples/sample-e2b-on-aws.git
-              git clone https://github.com/eric-yq/e2b-infra-sample-graviton-test.git
+              git clone https://github.com/aws-samples/sample-e2b-on-aws.git
 
 # ===================================================================================================
 # Outputs - Values exported after stack creation for reference by other stacks
