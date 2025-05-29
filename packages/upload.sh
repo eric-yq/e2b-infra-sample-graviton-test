@@ -18,7 +18,6 @@ fi
 BUCKET_FC_ENV_PIPELINE=$(grep "BUCKET_FC_ENV_PIPELINE" $CONFIG_FILE | cut -d'=' -f2)
 BUCKET_FC_KERNELS=$(grep "BUCKET_FC_KERNELS" $CONFIG_FILE | cut -d'=' -f2)
 BUCKET_FC_VERSIONS=$(grep "BUCKET_FC_VERSIONS" $CONFIG_FILE | cut -d'=' -f2)
-ARCHITECTURE=$(grep "^architecture=" $CONFIG_FILE | cut -d'=' -f2 || echo "x86_64")
 
 if [ -z "$BUCKET_FC_ENV_PIPELINE" ] || [ -z "$BUCKET_FC_KERNELS" ] || [ -z "$BUCKET_FC_VERSIONS" ]; then
     echo "Error: Could not read all required bucket information from configuration file"
@@ -32,7 +31,31 @@ echo "Bucket information read from configuration file:"
 echo "BUCKET_FC_ENV_PIPELINE: $BUCKET_FC_ENV_PIPELINE"
 echo "BUCKET_FC_KERNELS: $BUCKET_FC_KERNELS"
 echo "BUCKET_FC_VERSIONS: $BUCKET_FC_VERSIONS"
-echo "Architecture: $ARCHITECTURE"
+
+# Check if gsutil is installed
+if ! command -v gsutil &> /dev/null; then
+    echo "Installing gsutil..."
+
+    # Create keyring directory if it doesn't exist
+    sudo mkdir -p /usr/share/keyrings
+
+    # Add Google Cloud SDK distribution URI as a package source
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+
+    # Import Google Cloud public key
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+
+    # Update package list
+    export DEBIAN_FRONTEND=noninteractive
+    sudo apt-get update -y
+
+    # Install Google Cloud SDK (automatically accept all prompts)
+    sudo apt-get install -y google-cloud-sdk
+
+    echo "gsutil installation completed"
+else
+    echo "gsutil is already installed"
+fi
 
 # Check if AWS CLI is installed
 if ! command -v aws &> /dev/null; then
@@ -47,50 +70,42 @@ fi
 mkdir -p "${TEMP_DIR}/kernels"
 mkdir -p "${TEMP_DIR}/firecrackers"
 
-# Download envd binaries from GitHub releases based on architecture
-echo "Downloading envd binaries for architecture: $ARCHITECTURE"
+if [ "$ARCHITECTURE" = "x86_64" ]; then
+    ARCH_SUFFIX="x86_64"
+	# Download files from Google Cloud Storage
+	echo "Downloading files from Google Cloud Storage..."
+	gsutil cp -r gs://e2b-prod-public-builds/envd-v0.0.1 "${TEMP_DIR}/envd-v0.0.1"
+	gsutil cp -r gs://e2b-prod-public-builds/envd "${TEMP_DIR}/envd"
+	gsutil cp -r gs://e2b-prod-public-builds/kernels/* "${TEMP_DIR}/kernels/"
+	gsutil cp -r gs://e2b-prod-public-builds/firecrackers/* "${TEMP_DIR}/firecrackers/"
+	echo "File download completed"
 
-# Determine architecture suffix for GitHub downloads
-if [ "$ARCHITECTURE" = "arm64" ]; then
+else 
     ARCH_SUFFIX="arm64"
-else
-    ARCH_SUFFIX="x86_64"
+    # 1. Download envd v0.0.1
+	echo "Downloading envd v0.0.1 for $ARCH_SUFFIX..."
+	curl -L "https://github.com/tensorchord/envd/releases/download/v0.0.1/envd_0.0.1_Linux_${ARCH_SUFFIX}" -o "${TEMP_DIR}/envd-v0.0.1"
+	chmod +x "${TEMP_DIR}/envd-v0.0.1"
+	# 2. Download envd v0.2.0 (replace original 0.1.5)
+	echo "Downloading envd v0.2.0 for $ARCH_SUFFIX..."
+	curl -L "https://github.com/tensorchord/envd/releases/download/v0.2.0/envd_0.2.0_Linux_${ARCH_SUFFIX}" -o "${TEMP_DIR}/envd"
+	chmod +x "${TEMP_DIR}/envd"
+	# 3. Download kernels
+	CI_VERSION="v1.10"
+	KERNEL_VERSION="6.1.102"
+	FOLDER="vmlinux-${KERNEL_VERSION}"
+	mkdir -p "${TEMP_DIR}/kernels/${FOLDER}"
+	wget https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/$CI_VERSION/aarch64/vmlinux-$KERNEL_VERSION -o "${TEMP_DIR}/kernels/${FOLDER}/vmlinux.bin"
+	# 4. Download firecracker
+	FC_VERSION="v1.10.1"
+	FOLDER="v1.10.1_1fcdaec"
+	mkdir -p "${TEMP_DIR}/firecrackers/${FOLDER}"
+	release_url="https://github.com/firecracker-microvm/firecracker/releases"
+	curl -L ${release_url}/download/${FC_VERSION}/firecracker-${FC_VERSION}-aarch64.tgz | tar -xz
+    mv release-${FC_VERSION}-aarch64/firecracker-${FC_VERSION}-aarch64 \
+       ${TEMP_DIR}/firecrackers/${FOLDER}/firecracker
+    rm -rf release-${latest_version}-aarch64
 fi
-# Download envd v0.0.1
-echo "Downloading envd v0.0.1 for $ARCH_SUFFIX..."
-curl -L "https://github.com/tensorchord/envd/releases/download/v0.0.1/envd_0.0.1_Linux_${ARCH_SUFFIX}" -o "${TEMP_DIR}/envd-v0.0.1"
-chmod +x "${TEMP_DIR}/envd-v0.0.1"
-# Download envd v0.2.0 (replace original 0.1.5)
-echo "Downloading envd v0.2.0 for $ARCH_SUFFIX..."
-curl -L "https://github.com/tensorchord/envd/releases/download/v0.2.0/envd_0.2.0_Linux_${ARCH_SUFFIX}" -o "${TEMP_DIR}/envd"
-chmod +x "${TEMP_DIR}/envd"
-
-# Download architecture-specific kernels and firecrackers
-if [ "$ARCHITECTURE" = "arm64" ]; then
-    ARCH_SUFFIX="aarch64"
-else
-    ARCH_SUFFIX="x86_64"
-fi
-release_url="https://github.com/firecracker-microvm/firecracker/releases"
-latest_version=$(basename $(curl -fsSLI -o /dev/null -w  %{url_effective} ${release_url}/latest))
-CI_VERSION=${latest_version%.*}
-latest_kernel_key=$(curl "http://spec.ccfc.min.s3.amazonaws.com/?prefix=firecracker-ci/$CI_VERSION/$ARCH_SUFFIX/vmlinux-&list-type=2" \
-    | grep -oP "(?<=<Key>)(firecracker-ci/$CI_VERSION/$ARCH_SUFFIX/vmlinux-[0-9]+\.[0-9]+\.[0-9]{1,3})(?=</Key>)" \
-    | sort -V | tail -1)
-VMLINUX_VERSION=$(echo $latest_kernel_key | awk -F/ '{print $NF}')
-mkdir -p "${TEMP_DIR}/kernels/$VMLINUX_VERSION"
-
-# Download a kernel binary
-wget "https://s3.amazonaws.com/spec.ccfc.min/${latest_kernel_key}" -O "${TEMP_DIR}/kernels/$VMLINUX_VERSION/vmlinux.bin"
-
-# Download a firecracker binary
-curl -L ${release_url}/download/${latest_version}/firecracker-${latest_version}-${ARCH_SUFFIX}.tgz | tar -xz
-mkdir -p "${TEMP_DIR}/firecrackers/${latest_version}"
-mv release-${latest_version}-${ARCH_SUFFIX}/firecracker-${latest_version}-${ARCH_SUFFIX} \
-   ${TEMP_DIR}/firecrackers/${latest_version}/firecracker
-rm -rf release-${latest_version}-${ARCH_SUFFIX}
-
-echo "File download completed"
 
 # Upload to S3
 echo "Starting file upload to S3..."
@@ -101,7 +116,6 @@ aws s3 cp "${TEMP_DIR}/envd" "s3://${BUCKET_FC_ENV_PIPELINE}/envd"
 aws s3 cp --recursive "${TEMP_DIR}/kernels/" "s3://${BUCKET_FC_KERNELS}/"
 aws s3 cp --recursive "${TEMP_DIR}/firecrackers/" "s3://${BUCKET_FC_VERSIONS}/"
 echo "File upload to S3 completed"
-
 
 # Clean up temporary directory
 echo "Cleaning up temporary files..."
