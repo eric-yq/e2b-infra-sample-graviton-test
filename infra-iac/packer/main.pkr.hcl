@@ -46,6 +46,10 @@ build {
 
   provisioner "shell" {
     inline = [
+      # "sudo rm -rf /var/lib/apt/lists/*",
+      # "sudo mkdir -p /var/lib/apt/lists/partial",
+      # "sudo sed -i 's|http://archive.ubuntu.com/ubuntu|http://us.archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list",
+      # "sudo sed -i 's|http://security.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' /etc/apt/sources.list",
       "sudo apt-get clean",
       "sudo apt-get update -y",
       "sudo apt-get upgrade -y",
