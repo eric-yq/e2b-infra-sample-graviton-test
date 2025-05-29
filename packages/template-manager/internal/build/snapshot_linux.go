@@ -347,7 +347,7 @@ func (s *Snapshot) configureFC(ctx context.Context, tracer trace.Tracer) error {
 
 	telemetry.ReportEvent(childCtx, "set fc network config")
 
-	smt := true
+	smt := false
 	trackDirtyPages := false
 
 	machineConfig := &models.MachineConfiguration{
