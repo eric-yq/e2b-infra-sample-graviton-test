@@ -95,7 +95,7 @@ else
 	KERNEL_VERSION="6.1.102"
 	FOLDER="vmlinux-${KERNEL_VERSION}"
 	mkdir -p "${TEMP_DIR}/kernels/${FOLDER}"
-	wget https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/$CI_VERSION/aarch64/vmlinux-$KERNEL_VERSION -o "${TEMP_DIR}/kernels/${FOLDER}/vmlinux.bin"
+	curl -L https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/$CI_VERSION/aarch64/vmlinux-$KERNEL_VERSION -o ${TEMP_DIR}/kernels/${FOLDER}/vmlinux.bin
 	# 4. Download firecracker
 	FC_VERSION="v1.10.1"
 	FOLDER="v1.10.1_1fcdaec"
