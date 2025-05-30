@@ -42,10 +42,10 @@ build:
 	$(eval ARCHITECTURE := $(shell grep "^architecture=" /opt/config.properties | cut -d= -f2 || echo "x86_64"))
 	@if [ "$(ARCHITECTURE)" = "arm64" ]; then \
 		echo "Building for ARM64 architecture"; \
-	    CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -o bin/envd ${LDFLAGS} \
+	    CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -o bin/envd ${LDFLAGS} ; \
 	else \
 		echo "Building for x86_64 architecture"; \
-	    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o bin/envd ${LDFLAGS} \
+	    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o bin/envd ${LDFLAGS} ; \
 	fi
 
 	# sudo docker run --rm -v $(PWD):/app -w /app golang:1.23 bash -c "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o bin/envd ${LDFLAGS}"
