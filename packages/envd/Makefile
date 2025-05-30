@@ -40,6 +40,7 @@ build:
 	# Use Docker for building to ensure we have the Go environment
 	@mkdir -p bin
 	$(eval ARCHITECTURE := $(shell grep "^architecture=" /opt/config.properties | cut -d= -f2 || echo "x86_64"))
+	go mod tidy
 	@if [ "$(ARCHITECTURE)" = "arm64" ]; then \
 		echo "Building for ARM64 architecture"; \
 	    CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -o bin/envd ${LDFLAGS} . ; \
