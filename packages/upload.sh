@@ -81,22 +81,13 @@ if [ "$ARCHITECTURE" = "x86_64" ]; then
 	echo "File download completed"
 
 else 
-    # ARCH_SUFFIX="arm64"
-    # # 1. Download envd v0.0.1
-	# echo "Downloading envd v0.0.1 for $ARCH_SUFFIX..."
-	# curl -L "https://github.com/tensorchord/envd/releases/download/v0.0.1/envd_0.0.1_Linux_${ARCH_SUFFIX}" -o "${TEMP_DIR}/envd-v0.0.1"
-	# chmod +x "${TEMP_DIR}/envd-v0.0.1"
-	# # 2. Download envd v0.2.0 (replace original 0.1.5)
-	# echo "Downloading envd v0.2.0 for $ARCH_SUFFIX..."
-	# curl -L "https://github.com/tensorchord/envd/releases/download/v0.2.0/envd_0.2.0_Linux_${ARCH_SUFFIX}" -o "${TEMP_DIR}/envd"
-	# chmod +x "${TEMP_DIR}/envd"
-	# 3. Download kernels
+    # Download kernels
 	CI_VERSION="v1.10"
 	KERNEL_VERSION="6.1.102"
 	FOLDER="vmlinux-${KERNEL_VERSION}"
 	mkdir -p "${TEMP_DIR}/kernels/${FOLDER}"
 	curl -L https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/$CI_VERSION/aarch64/vmlinux-$KERNEL_VERSION -o ${TEMP_DIR}/kernels/${FOLDER}/vmlinux.bin
-	# 4. Download firecracker
+	# Download firecracker
 	FC_VERSION="v1.10.1"
 	FOLDER="v1.10.1_1fcdaec"
 	mkdir -p "${TEMP_DIR}/firecrackers/${FOLDER}"
