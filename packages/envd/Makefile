@@ -1,5 +1,5 @@
-ENV := $(shell cat ../../.last_used_env || echo "not-set")
--include ../../.env.${ENV}
+# ENV := $(shell cat ../../.last_used_env || echo "not-set")
+# -include ../../.env.${ENV}
 
 BUILD := $(shell git rev-parse --short HEAD)
 LDFLAGS=-ldflags "-X=main.commit=$(BUILD)"
