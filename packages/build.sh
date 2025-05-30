@@ -65,12 +65,12 @@ echo "Current directory: $(pwd)"
 make build-and-upload
 echo "template-manager module build and upload completed successfully"
 
-# Build and upload template-manager module
-# echo "=== Building envd module ==="
-# cd "$PROJECT_ROOT/envd" || { echo "envd directory not found"; exit 1; }
-# echo "Current directory: $(pwd)"
-# make build
-# echo "envd module build  completed successfully"
+# Build and upload envd module, for arm64 architecture
+echo "=== Building envd module ==="
+cd "$PROJECT_ROOT/envd" || { echo "envd directory not found"; exit 1; }
+echo "Current directory: $(pwd)"
+make build
+echo "envd module build  completed successfully"
 
 # Upload envd and other required files
 echo "=== Uploading envd and required files ==="
