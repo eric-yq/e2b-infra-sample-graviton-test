@@ -81,6 +81,11 @@ if [ "$ARCHITECTURE" = "x86_64" ]; then
 	echo "File download completed"
 
 else 
+    # Download envd-v0.0.1 
+    ARCH_SUFFIX="arm64"
+	echo "Downloading envd v0.0.1 for $ARCH_SUFFIX..."
+	curl -L "https://github.com/tensorchord/envd/releases/download/v0.0.1/envd_0.0.1_Linux_${ARCH_SUFFIX}" -o "${TEMP_DIR}/envd-v0.0.1"
+	chmod +x "${TEMP_DIR}/envd-v0.0.1"
     # Download kernels
 	CI_VERSION="v1.10"
 	KERNEL_VERSION="6.1.102"
@@ -101,7 +106,7 @@ fi
 # Upload to S3
 echo "Starting file upload to S3..."
 # Copy envd binary to S3 bucket
-# aws s3 cp "${TEMP_DIR}/envd-v0.0.1" "s3://${BUCKET_FC_ENV_PIPELINE}/envd-v0.0.1"
+aws s3 cp "${TEMP_DIR}/envd-v0.0.1" "s3://${BUCKET_FC_ENV_PIPELINE}/envd-v0.0.1"
 aws s3 cp ./envd/bin/envd "s3://${BUCKET_FC_ENV_PIPELINE}/envd"
 aws s3 cp --recursive "${TEMP_DIR}/kernels/" "s3://${BUCKET_FC_KERNELS}/"
 aws s3 cp --recursive "${TEMP_DIR}/firecrackers/" "s3://${BUCKET_FC_VERSIONS}/"
