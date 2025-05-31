@@ -65,12 +65,19 @@ echo "Current directory: $(pwd)"
 make build-and-upload
 echo "template-manager module build and upload completed successfully"
 
-# Build and upload envd module, for arm64 architecture
-echo "=== Building envd module ==="
-cd "$PROJECT_ROOT/envd" || { echo "envd directory not found"; exit 1; }
-echo "Current directory: $(pwd)"
-make build
-echo "envd module build  completed successfully"
+if [ "$ARCHITECTURE" = "arm64" ]; then
+  # Build envd module, for arm64 architecture
+  echo "=== Building envd module ==="
+  cd "$PROJECT_ROOT/envd" || { echo "envd directory not found"; exit 1; }
+  echo "Current directory: $(pwd)"
+  make build
+  echo "envd module build completed successfully."
+
+else
+  echo "In x86_64 architecture, skipping envd build."
+
+fi
+
 
 # Upload envd and other required files
 echo "=== Uploading envd and required files ==="
