@@ -114,10 +114,7 @@ bash infra-iac/db/init-db.sh
 
 **Custom Image Building (Recommended for Production)**
 By default, E2B uses images from the public registry. For production deployments, it's highly recommended to build and use your own custom images for enhanced security and control:
-   - **Build Custom Images**: Build custom E2B images and push them to your private ECR registry
-```bash
-bash packages/build.sh
-```
+   - **Build Custom Images**: Execute `bash packages/build.sh` to build custom E2B images and push them to your private ECR registry
    - **Configure Auto Scaling**: Set the desired capacity for client instance Auto Scaling Groups to 1 or 2 (default is 0 for cost optimization during initial setup)
 
 #### Deploy Nomad Applications

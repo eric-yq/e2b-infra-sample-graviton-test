@@ -467,7 +467,7 @@ Resources:
     Metadata:
       Comment: 'Terraform Bastion Host for deploying and managing E2B infrastructure components'
     Properties:
-      InstanceType: m6g.2xlarge
+      InstanceType: m7g.2xlarge
       KeyName: !Ref KeyName
       IamInstanceProfile: !Ref EC2InstanceProfile
       SubnetId: !Ref PublicSubnet1

@@ -10,7 +10,7 @@ packer {
 
 source "amazon-ebs" "orch" {
   ami_name      = "e2b-ubuntu-ami-${formatdate("YYYY-MM-DD-hh-mm-ss", timestamp())}"
-  instance_type = var.architecture == "x86_64" ? "t3.xlarge" : "t4g.xlarge"
+  instance_type = var.architecture == "x86_64" ? "t3.xlarge" : "m7g.xlarge"
   region        = var.aws_region
 
   source_ami_filter {

@@ -8,7 +8,7 @@ ifeq ($(ARCH),x86_64)
   AWS_INSTANCE_TYPE_DEFAULT := t3.xlarge
 else ifeq ($(ARCH),aarch64)
   ARCHITECTURE := arm64
-  AWS_INSTANCE_TYPE_DEFAULT := t4g.xlarge
+  AWS_INSTANCE_TYPE_DEFAULT := m7g.xlarge
 else
   $(error Unsupported architecture: $(ARCH))
 endif

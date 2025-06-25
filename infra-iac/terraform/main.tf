@@ -52,7 +52,7 @@ locals {
     # Server nodes run Consul and Nomad servers
     server = {
       instance_type_x86    = "t3.xlarge"
-      instance_type_arm    = "t4g.xlarge"
+      instance_type_arm    = "m7g.xlarge"
       desired_capacity = 3
       max_size         = 3
       min_size         = 3
@@ -68,7 +68,7 @@ locals {
     # API nodes run the API service
     api = {
       instance_type_x86    = "t3.xlarge"
-      instance_type_arm    = "t4g.xlarge"
+      instance_type_arm    = "m7g.xlarge"
       desired_capacity = 2
       max_size         = 5
       min_size         = 2
@@ -76,7 +76,7 @@ locals {
     # Build nodes for environment building (currently not active)
     build = {
       instance_type_x86    = "t3.xlarge"
-      instance_type_arm    = "t4g.xlarge"
+      instance_type_arm    = "m7g.xlarge"
       desired_capacity = 0
       max_size         = 0
       min_size         = 0
